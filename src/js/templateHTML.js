@@ -1,7 +1,5 @@
 export default class TemplateHTML {
   getGallery({ arrayDataElement, listGenge, configImage }) {
-    console.log(listGenge);
-
     return arrayDataElement.reduce((textHTML, dataElement) => {
       return (
         textHTML +
@@ -36,8 +34,10 @@ export default class TemplateHTML {
       poster_path,
       release_date,
       title,
+      media_type,
     } = dataElement;
 
+    //Name maybe in different places
     const name_film = original_title || original_name;
 
     const webformatURL = this.getUrlImage(poster_path, configImage);
@@ -47,7 +47,7 @@ export default class TemplateHTML {
     const textGenre = this.getTextGenre(genre_ids, listGenge);
 
     return `
-        <div class="photo-card" data-id_film="${id}">
+        <div class="photo-card" data-id_film="${id}" data-media_type="${media_type}">
            <img src="${webformatURL}" alt="${name_film}" loading="lazy" width="375"/>          
           
             <p class="info-item">${name_film}</p>            

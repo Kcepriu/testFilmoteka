@@ -126,3 +126,83 @@ body {
   flex-direction: column;
   align-items: left;
 }
+
+/**
+  |============================
+  | Modal window
+  |============================
+*/
+.backdrop {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+
+  background-color: rgba(94, 99, 99, 0.7);
+
+  visibility: visible;
+  opacity: 1;
+  pointer-events: auto;
+  z-index: 50;
+}
+
+.backdrop.is-hidden {
+  visibility: collapse;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.modal-window {
+  position: absolute;
+  z-index: 50;
+  top: 50%;
+  left: 50%;
+
+  transform: translate(-50%, -50%) scale(1);
+
+  max-width: 900px;
+  max-height: 609px;
+  width: 100%;
+  height: 100%;
+
+  background-color: white;
+
+  padding: 32px;
+
+  border: 1px solid rgba(18, 18, 18, 0.12);
+  border-radius: 30px;
+}
+
+.modal-window__btn-close {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+
+  width: 30px;
+  height: 30px;
+
+  color: var(--text-color-menu);
+  background-color: var(--bnt-background-white);
+
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.modal-window__icon-close {
+  width: 11px;
+  height: 11px;
+
+  fill: currentColor;
+}
+
+.modal__wrap-content {
+  display: flex;
+  gap: 30px;
+}
+
+.modal__wrap-information-film {
+  display: flex;
+  flex-direction: column;
+}

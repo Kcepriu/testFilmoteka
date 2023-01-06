@@ -23,21 +23,17 @@ export default class ApiThemoviedb {
     return result?.data;
   }
 
-  async fetchFullInformationFromFilm(movie_id) {
-    const result = await this.API.get(`/movie/${movie_id}`);
-
-    console.log(result?.data);
+  async fetchFullInformationFromFilm(movie_id, media_type) {
+    const result = await this.API.get(`/${media_type}/${movie_id}`);
 
     return result?.data;
   }
 
-  async fetchTrailersFromFilm(movie_id) {
-    const result = await this.API.get(`/movie/${movie_id}/videos`);
+  async fetchTrailersFromFilm(movie_id, media_type) {
+    const result = await this.API.get(`/${media_type}/${movie_id}/videos`);
     //https://youtu.be/-3qs-SxF8uw
 
-    console.log(result?.data);
-
-    return result?.data;
+    return result?.data?.results;
   }
 
   // * Work from configuration Images
@@ -58,8 +54,8 @@ export default class ApiThemoviedb {
   async getListGenge() {
     if (this.listGenge) return this.listGenge;
 
-    const arrayGenreMove = await this.fetchArrayGenreMove();
-    const arrayGenreTv = await this.fetchArrayGenreTv();
+    const arrayGenreMove = await this.fetchArrayGenre('movie');
+    const arrayGenreTv = await this.fetchArrayGenre('tv');
 
     this.listGenge = await this.convertArrayGenreToObject([
       ...arrayGenreMove,
@@ -67,15 +63,11 @@ export default class ApiThemoviedb {
     ]);
 
     return this.listGenge;
+    //movie
   }
 
-  async fetchArrayGenreMove() {
-    const result = await this.API.get('/genre/movie/list');
-    return result?.data?.genres;
-  }
-
-  async fetchArrayGenreTv() {
-    const result = await this.API.get('/genre/tv/list');
+  async fetchArrayGenre(media_type) {
+    const result = await this.API.get(`/genre/${media_type}/list`);
     return result?.data?.genres;
   }
 

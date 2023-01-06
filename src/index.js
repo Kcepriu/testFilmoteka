@@ -6,6 +6,8 @@ const refs = {
   inputNameSearchFilm: document.querySelector('.search-box'),
   formSearchFilm: document.querySelector('.search-form'),
   gallery: document.querySelector('.gallery'),
+  backdropModal: document.querySelector('.backdrop'),
+  btnCloseModal: document.querySelector('.modal-window__btn-close'),
 };
 
 const apiThemoviedb = new ApiThemoviedb();
@@ -13,6 +15,9 @@ const templateHTML = new TemplateHTML();
 
 refs.formSearchFilm.addEventListener('submit', submitSearchForm);
 refs.gallery.addEventListener('click', onClickElementGallery);
+
+refs.btnCloseModal.addEventListener('click', closeModal);
+refs.backdropModal.addEventListener('click', onClickBackdropModal);
 
 goToHome();
 
@@ -35,6 +40,8 @@ async function goToHome() {
   const { page, total_pages, total_results, results } =
     await apiThemoviedb.fetchTrending({ time_window: 'week' });
 
+  // console.log(results);
+
   const htmlText = templateHTML.getGallery({
     arrayDataElement: results,
     listGenge: await apiThemoviedb.getListGenge(),
@@ -42,8 +49,6 @@ async function goToHome() {
   });
 
   refs.gallery.insertAdjacentHTML('beforeend', htmlText);
-
-  console.log(results);
 
   //RenderNavigation
 }
@@ -57,8 +62,47 @@ function onClickElementGallery(event) {
   if (swatchElement.nodeName !== 'DIV') {
     parentCard = swatchElement.closest('.photo-card');
   }
-  console.log(parentCard);
-  console.log(parentCard.dataset.id_film);
 
+  openModal(parentCard.dataset.id_film, parentCard.dataset.media_type);
   //event.currentTarget
+}
+
+function openModal(filmId, media_type) {
+  //
+  renderModalWindow(filmId, media_type);
+
+  //Show window
+  refs.backdropModal.classList.remove('is-hidden');
+
+  //add even that close window from ESC
+  document.addEventListener('keydown', closeModal);
+}
+
+function closeModal() {
+  //Clowe Windows
+  refs.backdropModal.classList.add('is-hidden');
+
+  //Delete Event that close window from ESC
+  document.removeEventListener('keydown', closeModal);
+}
+
+function onClickBackdropModal(event) {
+  if (event.target === event.currentTarget) {
+    closeModal();
+  }
+}
+
+async function renderModalWindow(filmId, media_type) {
+  const informationFromFilm = await apiThemoviedb.fetchFullInformationFromFilm(
+    filmId,
+    media_type
+  );
+
+  const informationTrailers = await apiThemoviedb.fetchTrailersFromFilm(
+    filmId,
+    media_type
+  );
+
+  console.log(informationFromFilm);
+  console.log('Trailers', informationTrailers);
 }
