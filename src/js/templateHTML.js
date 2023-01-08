@@ -1,5 +1,5 @@
 export default class TemplateHTML {
-  getGallery({ arrayDataElement, listGenge, configImage }) {
+  getGallery({ results: arrayDataElement, listGenge, configImage }) {
     return arrayDataElement.reduce((textHTML, dataElement) => {
       return (
         textHTML +
@@ -46,13 +46,15 @@ export default class TemplateHTML {
 
     const textGenre = this.getTextGenre(genre_ids, listGenge);
 
+    const new_media_type = media_type || 'movie';
+
     const imgText =
       poster_path !== null
         ? `<img src="${webformatURL}" alt="${name_film}" loading="lazy" width="375"/>`
         : '';
 
     return `
-        <div class="photo-card" data-id_film="${id}" data-media_type="${media_type}">
+        <div class="photo-card" data-id_film="${id}" data-media_type="${new_media_type}">
            ${imgText}          
           
             <p class="info-item">${name_film}</p>            
@@ -165,7 +167,7 @@ export default class TemplateHTML {
 
             <div class="wrap__model-button">
               <button type="button" data-id_film="${id}" data-state="Watched">add to Watched</button>
-              <button type="button" data-id_film="${id}" data-state="queue">add to queue</button>
+              <button type="button" data-id_film="${id}" data-state="Queue">add to queue</button>
             </div>
           </div>
         `;

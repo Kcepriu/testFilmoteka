@@ -1,7 +1,10 @@
 import './css/styles.css';
 import ApiThemoviedb from './js/apiThemoviedb';
 import TemplateHTML from './js/templateHTML';
+import WorkWithStorage from './js/workWithStorage';
+
 import Pagination from './js/pagination';
+const COUNT_ELEMENT_FROM_PAGE = 20;
 
 const refs = {
   inputNameSearchFilm: document.querySelector('.search-box'),
@@ -14,6 +17,8 @@ const refs = {
 
 const apiThemoviedb = new ApiThemoviedb();
 const templateHTML = new TemplateHTML();
+const workWithStorage = new WorkWithStorage(COUNT_ELEMENT_FROM_PAGE);
+const curentFilm = {};
 
 refs.formSearchFilm.addEventListener('submit', submitSearchForm);
 refs.gallery.addEventListener('click', onClickElementGallery);
@@ -24,15 +29,18 @@ refs.contentModalWindow.addEventListener('click', onClickBtnFromModal);
 
 goToHome();
 
-// apiThemoviedb.fetchTrending({ time_window: 'week' });
+// Fetch data
+async function goToHome() {
+  // const { page, total_pages, total_results, results } =
 
-// apiThemoviedb.fetchTrending();
+  const responseToRequest = await apiThemoviedb.fetchTrending({
+    time_window: 'week',
+  });
 
-//id: 593643
+  await inputGallaryToWindow(responseToRequest);
+}
 
-// apiThemoviedb.fetchFullInformationFromFilm(593643);
-// apiThemoviedb.fetchTrailersFromFilm(593643);
-
+//greyhound
 async function submitSearchForm(event) {
   event.preventDefault();
 
@@ -41,37 +49,28 @@ async function submitSearchForm(event) {
     return;
   }
 
-  const { page, total_pages, total_results, results } =
-    await apiThemoviedb.searchFilm(refs.inputNameSearchFilm.value);
+  const responseToRequest = await apiThemoviedb.searchFilm(
+    refs.inputNameSearchFilm.value
+  );
 
-  //greyhound
-
-  const htmlText = templateHTML.getGallery({
-    arrayDataElement: results,
-    listGenge: await apiThemoviedb.getListGenge(),
-    configImage: await apiThemoviedb.getConfigurationImages(),
-  });
-
-  // refs.gallery.insertAdjacentHTML('beforeend', htmlText);
-  refs.gallery.innerHTML = htmlText;
+  await inputGallaryToWindow(responseToRequest);
 }
 
-async function goToHome() {
-  const { page, total_pages, total_results, results } =
-    await apiThemoviedb.fetchTrending({ time_window: 'week' });
+async function inputGallaryToWindow(responseToRequest) {
+  //add system fields
+  responseToRequest.listGenge = await apiThemoviedb.getListGenge();
+  responseToRequest.configImage = await apiThemoviedb.getConfigurationImages();
 
-  const htmlText = templateHTML.getGallery({
-    arrayDataElement: results,
-    listGenge: await apiThemoviedb.getListGenge(),
-    configImage: await apiThemoviedb.getConfigurationImages(),
-  });
+  refs.gallery.innerHTML = templateHTML.getGallery(responseToRequest);
 
-  // refs.gallery.insertAdjacentHTML('beforeend', htmlText);
-  refs.gallery.innerHTML = htmlText;
-
-  //RenderNavigation
+  await renderPAgination(responseToRequest);
 }
 
+async function renderPAgination(responseToRequest) {
+  // const { page, total_pages, total_results} =
+}
+
+// * Evens
 function onClickElementGallery(event) {
   event.preventDefault();
 
@@ -83,11 +82,9 @@ function onClickElementGallery(event) {
   }
 
   openModal(parentCard.dataset.id_film, parentCard.dataset.media_type);
-  //event.currentTarget
 }
 
 function openModal(filmId, media_type) {
-  //
   renderModalWindow(filmId, media_type);
 
   //Show window
@@ -102,13 +99,18 @@ function onClickBtnFromModal(event) {
     return;
   }
 
-  const idFilm = event.target.dataset.id_film;
-  console.log(idFilm, event.target.dataset.state);
+  if (event.target.dataset.state === 'Watched') {
+    workWithStorage.addToWatch(curentFilm);
+  } else if (event.target.dataset.state === 'Queue') {
+    addToQueue.addToWatch(curentFilm);
+  }
 }
 
 function closeModal() {
   //Clowe Windows
   refs.backdropModal.classList.add('is-hidden');
+
+  curentFilm = {};
 
   //Delete Event that close window from ESC
   document.removeEventListener('keydown', closeModal);
@@ -125,6 +127,7 @@ async function renderModalWindow(filmId, media_type) {
     filmId,
     media_type
   );
+  curentFilm = informationFromFilm;
 
   const informationTrailers = await apiThemoviedb.fetchTrailersFromFilm(
     filmId,
