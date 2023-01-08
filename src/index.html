@@ -23,10 +23,11 @@
     </header>
     <!-- ❗️❗️❗️ Add partials like so for every page -->
 
+    <div class="pagination"></div>
     <div class="gallery"></div>
 
-    <div class="backdrop is-hidden" data-modal>
-      <!--  -->
+    <div class="backdrop" data-modal>
+      <!-- is-hidden -->
       <div class="modal-window">
         <button class="modal-window__btn-close" type="button" data-modal-close>
           <svg class="modal-window__icon-close" width="11" height="11">
@@ -35,15 +36,18 @@
         </button>
         <div class="modal__wrap-content">
           <div class="wrap__image-video">
-            <img
-              src="http://image.tmdb.org/t/p/original/vDGr1YdrlfbU9wxTOdpf3zChmv9.jpg"
-              alt="Text"
-              loading="lazy"
-              width="375"
-            />
+            <div class="modal__image-container">
+              <img
+                class="modal__image"
+                src="http://image.tmdb.org/t/p/original/vDGr1YdrlfbU9wxTOdpf3zChmv9.jpg"
+                alt="Text"
+                loading="lazy"
+                width="375"
+              />
+            </div>
 
             <div class="wrap__trailler">
-              <iframe
+              <!-- <iframe
                 width="120"
                 src="https://www.youtube.com/embed/-3qs-SxF8uw"
                 title="Welcome To Hawthorn Featurette"
@@ -66,8 +70,9 @@
                 title="Welcome To Hawthorn Featurette"
                 allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
                 allowfullscreen
-              >
-              </iframe>
+              > 
+              </iframe>-->
+              <p><span>Original Title</span>A FISTFUL OF LEAD</p>
             </div>
           </div>
 

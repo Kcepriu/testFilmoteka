@@ -200,9 +200,42 @@ body {
 .modal__wrap-content {
   display: flex;
   gap: 30px;
+  height: 100%;
 }
 
 .modal__wrap-information-film {
   display: flex;
   flex-direction: column;
+  width: calc((900px - 30px) / 2);
+}
+
+.wrap__image-video {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  outline: 1px solid red;
+  /* max-height: 100%; */
+  width: calc((900px - 30px) / 2);
+  height: 100%;
+}
+.modal__image-container {
+  height: 100%;
+  max-width: 100%;
+  flex-grow: 1;
+  background-color: red;
+  overflow: hidden;
+}
+
+.modal__image {
+  display: block;
+  /* max-height: 100%; */
+  object-fit: contain;
+}
+
+.wrap__trailler {
+  outline: 1px solid blue;
+  background-color: blue;
+  height: calc(609px / 5);
+  width: 100%;
 }

@@ -1,6 +1,7 @@
 import './css/styles.css';
 import ApiThemoviedb from './js/apiThemoviedb';
 import TemplateHTML from './js/templateHTML';
+import Pagination from './js/pagination';
 
 const refs = {
   inputNameSearchFilm: document.querySelector('.search-box'),
