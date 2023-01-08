@@ -32,6 +32,10 @@ body {
   margin-bottom: 20px;
 }
 
+.logo {
+  color: white;
+}
+
 .search-form {
   position: relative;
   max-width: 320px;
@@ -87,11 +91,13 @@ body {
   gap: 20px;
   justify-content: center;
 }
+
 .photo-card {
   display: flex;
   flex-direction: column;
   max-width: 375px;
-  max-height: 340px;
+  height: 340px;
+  background-color: url('../images/no_image.svg');
   /* max-width: calc((100% - 3 * 20px) / 4); */
   /* max-height: 300px; */
 

@@ -18,6 +18,17 @@ export default class ApiThemoviedb {
     this.listGenge = null;
   }
 
+  async searchFilm(nameFilm) {
+    const result = await this.API.get(`search/movie`, {
+      params: {
+        query: nameFilm,
+      },
+    });
+
+    return result?.data;
+  }
+  // search/movie?api_key=6a47f8c83e830bed78d4a1e11118c2d0&query=greyhound
+
   async fetchTrending({ media_type = 'all', time_window = 'day' } = {}) {
     const result = await this.API.get(`/trending/${media_type}/${time_window}`);
     return result?.data;

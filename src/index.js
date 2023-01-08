@@ -9,6 +9,7 @@ const refs = {
   gallery: document.querySelector('.gallery'),
   backdropModal: document.querySelector('.backdrop'),
   btnCloseModal: document.querySelector('.modal-window__btn-close'),
+  contentModalWindow: document.querySelector('.modal__wrap-content'),
 };
 
 const apiThemoviedb = new ApiThemoviedb();
@@ -19,6 +20,7 @@ refs.gallery.addEventListener('click', onClickElementGallery);
 
 refs.btnCloseModal.addEventListener('click', closeModal);
 refs.backdropModal.addEventListener('click', onClickBackdropModal);
+refs.contentModalWindow.addEventListener('click', onClickBtnFromModal);
 
 goToHome();
 
@@ -33,15 +35,16 @@ goToHome();
 
 async function submitSearchForm(event) {
   event.preventDefault();
-  //   const result = await apiThemoviedb.fetchTrending({ time_window: 'week' });
-  //   console.log(result);
-}
 
-async function goToHome() {
+  if (!refs.inputNameSearchFilm.value) {
+    goToHome();
+    return;
+  }
+
   const { page, total_pages, total_results, results } =
-    await apiThemoviedb.fetchTrending({ time_window: 'week' });
+    await apiThemoviedb.searchFilm(refs.inputNameSearchFilm.value);
 
-  // console.log(results);
+  //greyhound
 
   const htmlText = templateHTML.getGallery({
     arrayDataElement: results,
@@ -49,7 +52,22 @@ async function goToHome() {
     configImage: await apiThemoviedb.getConfigurationImages(),
   });
 
-  refs.gallery.insertAdjacentHTML('beforeend', htmlText);
+  // refs.gallery.insertAdjacentHTML('beforeend', htmlText);
+  refs.gallery.innerHTML = htmlText;
+}
+
+async function goToHome() {
+  const { page, total_pages, total_results, results } =
+    await apiThemoviedb.fetchTrending({ time_window: 'week' });
+
+  const htmlText = templateHTML.getGallery({
+    arrayDataElement: results,
+    listGenge: await apiThemoviedb.getListGenge(),
+    configImage: await apiThemoviedb.getConfigurationImages(),
+  });
+
+  // refs.gallery.insertAdjacentHTML('beforeend', htmlText);
+  refs.gallery.innerHTML = htmlText;
 
   //RenderNavigation
 }
@@ -79,6 +97,15 @@ function openModal(filmId, media_type) {
   document.addEventListener('keydown', closeModal);
 }
 
+function onClickBtnFromModal(event) {
+  if (event.target.nodeName !== 'BUTTON') {
+    return;
+  }
+
+  const idFilm = event.target.dataset.id_film;
+  console.log(idFilm, event.target.dataset.state);
+}
+
 function closeModal() {
   //Clowe Windows
   refs.backdropModal.classList.add('is-hidden');
@@ -104,6 +131,12 @@ async function renderModalWindow(filmId, media_type) {
     media_type
   );
 
-  console.log(informationFromFilm);
-  console.log('Trailers', informationTrailers);
+  const textHTML = templateHTML.getModalWindow({
+    informationFromFilm,
+    informationTrailers,
+    listGenge: await apiThemoviedb.getListGenge(),
+    configImage: await apiThemoviedb.getConfigurationImages(),
+  });
+
+  refs.contentModalWindow.innerHTML = textHTML;
 }

@@ -46,9 +46,14 @@ export default class TemplateHTML {
 
     const textGenre = this.getTextGenre(genre_ids, listGenge);
 
+    const imgText =
+      poster_path !== null
+        ? `<img src="${webformatURL}" alt="${name_film}" loading="lazy" width="375"/>`
+        : '';
+
     return `
         <div class="photo-card" data-id_film="${id}" data-media_type="${media_type}">
-           <img src="${webformatURL}" alt="${name_film}" loading="lazy" width="375"/>          
+           ${imgText}          
           
             <p class="info-item">${name_film}</p>            
             <div class="info">
@@ -77,5 +82,92 @@ export default class TemplateHTML {
     }, '');
 
     return result;
+  }
+
+  //MODAL
+
+  getTextSectionTrailers(informationTrailers) {
+    let result = '';
+
+    for (
+      let index = 0;
+      index < Math.min(3, informationTrailers.length);
+      index++
+    ) {
+      const { key, name } = informationTrailers[index];
+      console.log(key, name);
+
+      result += `
+              <iframe
+                width="120"
+                src="https://www.youtube.com/embed/${key}"
+                title="${name}"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowfullscreen
+              >
+              </iframe>
+              `;
+    }
+    return result;
+  }
+
+  getModalWindow({
+    informationFromFilm,
+    informationTrailers,
+    listGenge,
+    configImage,
+  }) {
+    const {
+      poster_path,
+      vote_average,
+      vote_count,
+      title,
+      popularity,
+      original_title,
+      genres,
+      overview,
+      id,
+    } = informationFromFilm;
+
+    const name_film = title || original_title;
+
+    const webformatURL = this.getUrlImage(poster_path, configImage);
+    const textGenre = this.getTextGenre(genres, listGenge);
+
+    return `
+          <div class="wrap__image-video">
+            <div class="modal__image-container">
+              <img
+                class="modal__image"
+                src="${webformatURL}"
+                alt="${name_film}"
+                loading="lazy"
+                width="375"
+              /> 
+            </div>
+
+            <div class="wrap__trailler">
+              ${this.getTextSectionTrailers(informationTrailers)}
+              </iframe>              
+            </div>
+          </div>
+
+          <div class="modal__wrap-information-film">
+            <h2>${name_film}</h2>
+            <p><span>Vote / Votes</span> ${vote_average} / ${vote_count}</p>
+            <p><span>Popularity</span>${popularity}</p>
+            <p><span>Original Title</span>${original_title}</p>
+            <p><span>Genre</span>${textGenre}</p>
+            <p>About</p>
+            <p>
+              ${overview}
+            </p>
+
+            <div class="wrap__model-button">
+              <button type="button" data-id_film="${id}" data-state="Watched">add to Watched</button>
+              <button type="button" data-id_film="${id}" data-state="queue">add to queue</button>
+            </div>
+          </div>
+        `;
   }
 }
