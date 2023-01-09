@@ -16,10 +16,12 @@ export default class WorkWithStorage {
     if (this.#isAlreadyAdd(element, this.#listWatched)) return;
     this.#listWatched.push(element);
     this.#writeListWatched();
+    //watched queue
   }
 
   addToQueue(element) {
     if (this.#isAlreadyAdd(element, this.#listQueue)) return;
+
     this.#listQueue.push(element);
     this.#writeListQueue();
   }
@@ -37,10 +39,9 @@ export default class WorkWithStorage {
     // і грохнути його
   }
 
-  #isAlreadyAdd(element, obj) {
-    //TODO
+  #isAlreadyAdd(newElement, obj) {
     //Шукає, чи не додали раніше
-    return obj.find(el => (el.id = element.id));
+    return obj.find(el => el.id === newElement.id);
   }
 
   // * Read Write to Storage
@@ -79,7 +80,7 @@ export default class WorkWithStorage {
   // * Get data
   #getDataPageObject(obj, numberPage) {
     const total_results = Object.keys(obj).length;
-    const start = this.countElementFromPage * numberPage - 1;
+    const start = this.countElementFromPage * (numberPage - 1);
     const end = start + this.countElementFromPage;
 
     return {

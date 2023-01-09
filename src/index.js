@@ -13,12 +13,14 @@ const refs = {
   backdropModal: document.querySelector('.backdrop'),
   btnCloseModal: document.querySelector('.modal-window__btn-close'),
   contentModalWindow: document.querySelector('.modal__wrap-content'),
+  btnWatched: document.querySelector('.watched'),
+  btnQueue: document.querySelector('.queue'),
 };
 
 const apiThemoviedb = new ApiThemoviedb();
 const templateHTML = new TemplateHTML();
 const workWithStorage = new WorkWithStorage(COUNT_ELEMENT_FROM_PAGE);
-const curentFilm = {};
+let curentFilm = {};
 
 refs.formSearchFilm.addEventListener('submit', submitSearchForm);
 refs.gallery.addEventListener('click', onClickElementGallery);
@@ -26,6 +28,9 @@ refs.gallery.addEventListener('click', onClickElementGallery);
 refs.btnCloseModal.addEventListener('click', closeModal);
 refs.backdropModal.addEventListener('click', onClickBackdropModal);
 refs.contentModalWindow.addEventListener('click', onClickBtnFromModal);
+
+refs.btnWatched.addEventListener('click', goToWatched);
+refs.btnQueue.addEventListener('click', goToQueue);
 
 goToHome();
 
@@ -36,6 +41,20 @@ async function goToHome() {
   const responseToRequest = await apiThemoviedb.fetchTrending({
     time_window: 'week',
   });
+
+  await inputGallaryToWindow(responseToRequest);
+}
+
+async function goToWatched(event) {
+  event.preventDefault();
+  const responseToRequest = workWithStorage.getDataPageWatched();
+
+  await inputGallaryToWindow(responseToRequest);
+}
+
+async function goToQueue(event) {
+  event.preventDefault();
+  const responseToRequest = workWithStorage.getDataPageQueue();
 
   await inputGallaryToWindow(responseToRequest);
 }
@@ -102,7 +121,7 @@ function onClickBtnFromModal(event) {
   if (event.target.dataset.state === 'Watched') {
     workWithStorage.addToWatch(curentFilm);
   } else if (event.target.dataset.state === 'Queue') {
-    addToQueue.addToWatch(curentFilm);
+    workWithStorage.addToQueue(curentFilm);
   }
 }
 
@@ -127,6 +146,7 @@ async function renderModalWindow(filmId, media_type) {
     filmId,
     media_type
   );
+
   curentFilm = informationFromFilm;
 
   const informationTrailers = await apiThemoviedb.fetchTrailersFromFilm(

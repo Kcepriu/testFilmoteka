@@ -32,7 +32,9 @@ body {
   margin-bottom: 20px;
 }
 
-.logo {
+.logo,
+.watched,
+.queue {
   color: white;
 }
 

@@ -36,7 +36,6 @@ export default class ApiThemoviedb {
 
   async fetchFullInformationFromFilm(movie_id, media_type) {
     const result = await this.API.get(`/${media_type}/${movie_id}`);
-
     return result?.data;
   }
 

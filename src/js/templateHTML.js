@@ -29,6 +29,7 @@ export default class TemplateHTML {
       id,
       backdrop_path,
       genre_ids,
+      genres,
       original_title,
       original_name,
       poster_path,
@@ -44,7 +45,7 @@ export default class TemplateHTML {
 
     const year = this.getYear(release_date);
 
-    const textGenre = this.getTextGenre(genre_ids, listGenge);
+    const textGenre = this.getTextGenre(genres, genre_ids, listGenge);
 
     const new_media_type = media_type || 'movie';
 
@@ -78,12 +79,18 @@ export default class TemplateHTML {
     return textData.slice(0, 4);
   }
 
-  getTextGenre(genre_ids, listGenge) {
-    const result = genre_ids.reduce((textGenre, elem) => {
-      return (textGenre += (textGenre ? ', ' : '') + listGenge[elem]);
-    }, '');
-
-    return result;
+  getTextGenre(genres, genre_ids, listGenge) {
+    if (genres) {
+      const result = genres.reduce((textGenre, elem) => {
+        return (textGenre += (textGenre ? ', ' : '') + elem.name);
+      }, '');
+      return result;
+    } else {
+      const result = genre_ids.reduce((textGenre, elem) => {
+        return (textGenre += (textGenre ? ', ' : '') + listGenge[elem]);
+      }, '');
+      return result;
+    }
   }
 
   //MODAL
@@ -91,13 +98,14 @@ export default class TemplateHTML {
   getTextSectionTrailers(informationTrailers) {
     let result = '';
 
+    return result;
+
     for (
       let index = 0;
       index < Math.min(3, informationTrailers.length);
       index++
     ) {
       const { key, name } = informationTrailers[index];
-      console.log(key, name);
 
       result += `
               <iframe
@@ -134,7 +142,7 @@ export default class TemplateHTML {
     const name_film = title || original_title;
 
     const webformatURL = this.getUrlImage(poster_path, configImage);
-    const textGenre = this.getTextGenre(genres, listGenge);
+    const textGenre = this.getTextGenre(genres, genres, listGenge);
 
     return `
           <div class="wrap__image-video">
@@ -150,7 +158,7 @@ export default class TemplateHTML {
 
             <div class="wrap__trailler">
               ${this.getTextSectionTrailers(informationTrailers)}
-              </iframe>              
+              
             </div>
           </div>
 
