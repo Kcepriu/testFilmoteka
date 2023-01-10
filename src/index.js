@@ -3,7 +3,18 @@ import ApiThemoviedb from './js/apiThemoviedb';
 import TemplateHTML from './js/templateHTML';
 import WorkWithStorage from './js/workWithStorage';
 
-import Pagination from './js/pagination';
+import { getFirebaseConfig } from './js/firebase-config.js';
+import { getPerformance } from 'firebase/performance';
+
+import { initializeApp } from 'firebase/app';
+import {
+  getAuth,
+  onAuthStateChanged,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signOut,
+} from 'firebase/auth';
+
 const COUNT_ELEMENT_FROM_PAGE = 20;
 
 const refs = {
@@ -15,6 +26,11 @@ const refs = {
   contentModalWindow: document.querySelector('.modal__wrap-content'),
   btnWatched: document.querySelector('.watched'),
   btnQueue: document.querySelector('.queue'),
+
+  userPicElement: document.getElementById('user-pic'),
+  userNameElement: document.getElementById('user-name'),
+  signInButtonElement: document.getElementById('sign-in'),
+  signOutButtonElement: document.getElementById('sign-out'),
 };
 
 const apiThemoviedb = new ApiThemoviedb();
@@ -32,6 +48,98 @@ refs.contentModalWindow.addEventListener('click', onClickBtnFromModal);
 refs.btnWatched.addEventListener('click', goToWatched);
 refs.btnQueue.addEventListener('click', goToQueue);
 
+//! ---------------------------------------
+//! ---------------------------------------
+//! ---------------------------------------
+// Signs-in Friendly Chat.
+async function signIn() {
+  // Sign in Firebase using popup auth and Google as the identity provider.
+  console.log('signIn');
+
+  const provider = new GoogleAuthProvider();
+  await signInWithPopup(getAuth(), provider);
+}
+
+// Signs-out of Friendly Chat.
+function signOutUser() {
+  // Sign out of Firebase.
+  signOut(getAuth());
+}
+
+// Initialize firebase auth
+function initFirebaseAuth() {
+  // Listen to auth state changes.
+  onAuthStateChanged(getAuth(), authStateObserver);
+}
+
+// Returns the signed-in user's profile Pic URL.
+function getProfilePicUrl() {
+  return getAuth().currentUser.photoURL || '/images/profile_placeholder.png';
+}
+
+// Returns the signed-in user's display name.
+function getUserName() {
+  return getAuth().currentUser.displayName;
+}
+
+// Returns true if a user is signed-in.
+function isUserSignedIn() {
+  return !!getAuth().currentUser;
+}
+
+// Adds a size to Google Profile pics URLs.
+function addSizeToGoogleProfilePic(url) {
+  if (url.indexOf('googleusercontent.com') !== -1 && url.indexOf('?') === -1) {
+    return url + '?sz=150';
+  }
+  return url;
+}
+
+function authStateObserver(user) {
+  if (user) {
+    // User is signed in!
+    // Get the signed-in user's profile pic and name.
+    const profilePicUrl = getProfilePicUrl();
+    const userName = getUserName();
+
+    // Set the user's profile pic and name.
+    refs.userPicElement.style.backgroundImage =
+      'url(' + addSizeToGoogleProfilePic(profilePicUrl) + ')';
+    refs.userNameElement.textContent = userName;
+
+    // Show user's profile and sign-out button.
+    refs.userNameElement.removeAttribute('hidden');
+    refs.userPicElement.removeAttribute('hidden');
+    refs.signOutButtonElement.removeAttribute('hidden');
+
+    // Hide sign-in button.
+    refs.signInButtonElement.setAttribute('hidden', 'true');
+
+    // We save the Firebase Messaging Device token and enable notifications.
+    //TODO
+    // saveMessagingDeviceToken();
+  } else {
+    // User is signed out!
+    // Hide user's profile and sign-out button.
+    refs.userNameElement.setAttribute('hidden', 'true');
+    refs.userPicElement.setAttribute('hidden', 'true');
+    refs.signOutButtonElement.setAttribute('hidden', 'true');
+
+    // Show sign-in button.
+    refs.signInButtonElement.removeAttribute('hidden');
+  }
+}
+
+refs.signOutButtonElement.addEventListener('click', signOutUser);
+refs.signInButtonElement.addEventListener('click', signIn);
+
+const firebaseApp = initializeApp(getFirebaseConfig());
+getPerformance();
+initFirebaseAuth();
+
+//! ---------------------------------------
+//! ---------------------------------------
+//! ---------------------------------------
 goToHome();
 
 // Fetch data
@@ -92,6 +200,7 @@ async function renderPAgination(responseToRequest) {
 // * Evens
 function onClickElementGallery(event) {
   event.preventDefault();
+  if (event.target === event.currentTarget) return;
 
   const swatchElement = event.target;
   let parentCard = swatchElement;
